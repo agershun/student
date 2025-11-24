@@ -5327,7 +5327,7 @@
         const AI_URLS = {
             chatgpt: 'https://chatgpt.com/?prompt=',
             claude: 'https://claude.ai/new?q=',
-            grok: 'https://grok.com',
+            grok: 'https://grok.com/?q=',
             gigachat: 'https://giga.chat',
             yandex: 'https://alice.yandex.ru/',
             deepseek: 'https://chat.deepseek.com/',
@@ -5401,7 +5401,7 @@
 
                 // Open AI URL
                 let url = baseUrl;
-                if (selectedAI === 'chatgpt' || selectedAI === 'claude') {
+                if (selectedAI === 'chatgpt' || selectedAI === 'claude' || selectedAI === 'grok') {
                     url += encodeURIComponent(promptText);
                 }
                 window.open(url, '_blank');
