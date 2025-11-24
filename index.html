@@ -5328,7 +5328,7 @@
             chatgpt: 'https://chatgpt.com/?prompt=',
             claude: 'https://claude.ai/new?q=',
             grok: 'https://grok.com/?q=',
-            gigachat: 'https://giga.chat',
+            gigachat: 'https://giga.chat/?prompt=',
             yandex: 'https://alice.yandex.ru/',
             deepseek: 'https://chat.deepseek.com/',
             qwen: 'https://chat.qwen.ai',
@@ -5401,7 +5401,7 @@
 
                 // Open AI URL
                 let url = baseUrl;
-                if (selectedAI === 'chatgpt' || selectedAI === 'claude' || selectedAI === 'grok' || selectedAI === 'lechat' || selectedAI === 'zai') {
+                if (selectedAI === 'chatgpt' || selectedAI === 'claude' || selectedAI === 'grok' || selectedAI === 'gigachat' || selectedAI === 'lechat' || selectedAI === 'zai') {
                     url += encodeURIComponent(promptText);
                 }
                 window.open(url, '_blank');
