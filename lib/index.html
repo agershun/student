@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корпоративная библиотека промптов 1С-Рарус</title>
+    <meta name="description" content="Эталонная коллекция из 13 универсальных промптов для решения типовых бизнес-задач">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .ai-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-selector label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        select {
+            padding: 10px 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        select:hover {
+            border-color: #3b82f6;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .filters-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .filters {
+            display: inline-flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #475569;
+        }
+
+        .filter-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .filter-btn.active {
+            background: #1e3a8a;
+            border-color: #1e3a8a;
+            color: white;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #1e3a8a;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            font-weight: 600;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .prompt-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            display: none;
+        }
+
+        .prompt-card.visible {
+            display: block;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.15);
+            border-color: #3b82f6;
+        }
+
+        .prompt-number {
+            display: inline-block;
+            background: #1e3a8a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .prompt-card h3 {
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .prompt-description {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .prompt-category {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 10px;
+            background: #eff6ff;
+            color: #1e3a8a;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            color: #1e3a8a;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #1e3a8a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            padding: 0 30px;
+            background: white;
+            position: sticky;
+            top: 110px;
+            z-index: 9;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: #1e3a8a;
+            background: #f8fafc;
+        }
+
+        .tab-btn.active {
+            color: #1e3a8a;
+            border-bottom-color: #1e3a8a;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .prompt-text {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #334155;
+            margin-bottom: 20px;
+        }
+
+        .copy-btn {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .copy-btn:hover {
+            background: #1e40af;
+            transform: scale(1.02);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .instruction-section {
+            margin-bottom: 30px;
+        }
+
+        .instruction-section h3 {
+            color: #1e3a8a;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .instruction-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instruction-section li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .instruction-section li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .variables-list, .documents-list {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .variables-input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-group small {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .prompts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                margin: 10px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Корпоративная библиотека промптов 1С-Рарус</h1>
+            <p class="subtitle">Эталонная коллекция из 13 универсальных промптов для решения типовых бизнес-задач</p>
+
+            <div class="controls">
+                <div class="ai-selector">
+                    <label for="ai-select">Нейросеть:</label>
+                    <select id="ai-select">
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="grok">Grok</option>
+                        <option value="gigachat">GigaChat</option>
+                        <option value="yandex">Yandex GPT</option>
+                        <option value="deepseek" selected>DeepSeek</option>
+                        <option value="qwen">Qwen</option>
+                        <option value="zai">Z.ai</option>
+                        <option value="lechat">Le Chat</option>
+                    </select>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" class="search-input" id="search" placeholder="Поиск по названию, описанию или содержимому промпта...">
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>ℹ️ Как использовать:</strong> При нажатии на карточку откроется полный промпт с инструкцией. Замените переменные в [квадратных скобках] на ваши данные, приложите необходимые документы и скопируйте в выбранную нейросеть.</p>
+            </div>
+        </header>
+
+        <div class="filters-wrapper">
+            <div class="filters">
+                <button class="filter-btn active" data-category="all">Все (13)</button>
+                <button class="filter-btn" data-category="clients">Работа с клиентами</button>
+                <button class="filter-btn" data-category="team">Управление командой</button>
+                <button class="filter-btn" data-category="finance">Финансы и бюджеты</button>
+                <button class="filter-btn" data-category="projects">Управление проектами</button>
+                <button class="filter-btn" data-category="communication">Коммуникации</button>
+            </div>
+        </div>
+
+        <div class="prompts-grid" id="prompts-grid">
+            <!-- Промпты будут добавлены через JavaScript -->
+        </div>
+
+        <footer>
+            <p>© 2025 1С-Рарус. Все промпты созданы на основе лучших решений участников мастер-класса по промпт-инженерингу.</p>
+            <p>Создано с использованием Claude Code</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="prompt">Промпт</button>
+                <button class="tab-btn" data-tab="variables-form">Переменные</button>
+                <button class="tab-btn" data-tab="instruction">Инструкция</button>
+                <button class="tab-btn" data-tab="examples">Примеры</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="tab-content active" id="tab-prompt">
+                    <div class="prompt-text" id="prompt-full-text"></div>
+                    <button class="copy-btn" onclick="copyPrompt()">Скопировать промпт и открыть нейросеть</button>
+                </div>
+
+                <div class="tab-content" id="tab-variables-form">
+                    <div class="variables-form-intro">
+                        <p style="color: #64748b; margin-bottom: 20px;">Заполните переменные ниже, чтобы создать готовый промпт с вашими данными. Оставьте пустыми те переменные, которые не нужны.</p>
+                    </div>
+                    <form id="variables-form" class="variables-input-form">
+                        <!-- Форма будет заполнена динамически -->
+                    </form>
+                    <button class="copy-btn" onclick="copyFilledPrompt()" style="margin-top: 20px;">Скопировать заполненный промпт и открыть нейросеть</button>
+                </div>
+
+                <div class="tab-content" id="tab-instruction">
+                    <div class="instruction-section">
+                        <h3>Когда эффективен</h3>
+                        <ul id="when-effective"></ul>
+                    </div>
+
+                    <div class="instruction-section">
+                        <h3>Переменные для замены</h3>
+                        <div class="variables-list" id="variables"></div>
+                    </div>
+
+                    <div class="instruction-section">
+                        <h3>Документы для приложения</h3>
+                        <div class="documents-list" id="documents"></div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-examples">
+                    <div id="examples-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        Промпт скопирован в буфер обмена!
+    </div>
+
+    <script>
+        const AI_URLS = {
+            chatgpt: 'https://chatgpt.com/?prompt=',
+            claude: 'https://claude.ai/new?q=',
+            grok: 'https://grok.com/?q=',
+            gigachat: 'https://giga.chat/?prompt=',
+            yandex: 'https://alice.yandex.ru/',
+            deepseek: 'https://chat.deepseek.com/',
+            qwen: 'https://chat.qwen.ai',
+            zai: 'https://chat.z.ai/?q=',
+            lechat: 'https://chat.mistral.ai/chat?q='
+        };
+
+        let prompts = [];
+
+        // Загрузка промптов из JSON
+        async function loadPrompts() {
+            try {
+                const response = await fetch('prompts.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load prompts.json');
+                }
+                const data = await response.json();
+                prompts = data.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    category: p.category,
+                    description: p.description,
+                    prompt: p.fullPrompt,
+                    whenEffective: p.whenEffective,
+                    variables: p.variables,
+                    documents: p.documents,
+                    examples: p.examples
+                }));
+                return prompts;
+            } catch (error) {
+                console.error('Error loading prompts:', error);
+                return [];
+            }
+        }
+
+
+        let currentPrompt = null;
+        let selectedAI = 'deepseek';
+
+        // Инициализация
+        async function init() {
+            await loadPrompts();
+            renderPrompts();
+            setupEventListeners();
+        }
+
+        // Рендер карточек промптов
+        function renderPrompts(filteredPrompts = prompts) {
+            const grid = document.getElementById('prompts-grid');
+            grid.innerHTML = '';
+
+            filteredPrompts.forEach(prompt => {
+                const card = document.createElement('div');
+                card.className = 'prompt-card visible';
+                card.innerHTML = `
+                    <span class="prompt-number">Промпт ${prompt.id}</span>
+                    <h3>${prompt.title}</h3>
+                    <p class="prompt-description">${prompt.description}</p>
+                    <span class="prompt-category">${getCategoryName(prompt.category)}</span>
+                `;
+                card.onclick = () => openModal(prompt);
+                grid.appendChild(card);
+            });
+        }
+
+        // Получение имени категории
+        function getCategoryName(category) {
+            const categories = {
+                clients: 'Работа с клиентами',
+                team: 'Управление командой',
+                finance: 'Финансы и бюджеты',
+                projects: 'Управление проектами',
+                communication: 'Коммуникации'
+            };
+            return categories[category] || category;
+        }
+
+        // Открытие модального окна
+        function openModal(prompt) {
+            currentPrompt = prompt;
+            document.getElementById('modal-title').textContent = prompt.title;
+            document.getElementById('prompt-full-text').textContent = prompt.prompt;
+
+            // Инструкция
+            const whenEffectiveList = document.getElementById('when-effective');
+            whenEffectiveList.innerHTML = prompt.whenEffective.map(item => `<li>${item}</li>`).join('');
+
+            const variablesList = document.getElementById('variables');
+            variablesList.innerHTML = prompt.variables.map(v => `<p>${v}</p>`).join('');
+
+            const documentsList = document.getElementById('documents');
+            documentsList.innerHTML = prompt.documents.map(d => `<p>${d}</p>`).join('');
+
+            // Примеры
+            const examplesContent = document.getElementById('examples-content');
+            examplesContent.innerHTML = `<div class="prompt-text">${prompt.examples}</div>`;
+
+            // Форма переменных
+            buildVariablesForm(prompt);
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        // Построение формы переменных
+        function buildVariablesForm(prompt) {
+            const form = document.getElementById('variables-form');
+            form.innerHTML = '';
+
+            // Извлекаем переменные из промпта (все что в [квадратных скобках])
+            const variableMatches = prompt.prompt.match(/\[([^\]]+)\]/g);
+            if (!variableMatches) {
+                form.innerHTML = '<p style="color: #64748b;">В этом промпте нет переменных для замены.</p>';
+                return;
+            }
+
+            // Убираем дубликаты
+            const uniqueVariables = [...new Set(variableMatches)];
+
+            uniqueVariables.forEach((variable, index) => {
+                const cleanVar = variable.slice(1, -1); // Убираем []
+                const isLongText = cleanVar.length > 50 || cleanVar.includes('/') || cleanVar.includes(',');
+
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+
+                const label = document.createElement('label');
+                label.textContent = cleanVar;
+                label.setAttribute('for', `var-${index}`);
+
+                let input;
+                if (isLongText) {
+                    input = document.createElement('textarea');
+                    input.rows = 3;
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                }
+
+                input.id = `var-${index}`;
+                input.name = cleanVar;
+                input.placeholder = `Введите значение для: ${cleanVar}`;
+                input.dataset.variable = variable;
+
+                formGroup.appendChild(label);
+                formGroup.appendChild(input);
+                form.appendChild(formGroup);
+            });
+        }
+
+        // Копирование заполненного промпта
+        function copyFilledPrompt() {
+            if (!currentPrompt) return;
+
+            const form = document.getElementById('variables-form');
+            let filledPrompt = currentPrompt.prompt;
+
+            // Заменяем все переменные на введенные значения
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                const variable = input.dataset.variable;
+                const value = input.value.trim();
+
+                if (value) {
+                    // Заменяем переменную на значение
+                    filledPrompt = filledPrompt.replace(new RegExp(variable.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), value);
+                }
+            });
+
+            navigator.clipboard.writeText(filledPrompt).then(() => {
+                showNotification();
+                setTimeout(() => {
+                    openAI(filledPrompt);
+                }, 500);
+            });
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            currentPrompt = null;
+        }
+
+        // Копирование промпта и открытие AI
+        function copyPrompt() {
+            if (!currentPrompt) return;
+
+            navigator.clipboard.writeText(currentPrompt.prompt).then(() => {
+                showNotification();
+                setTimeout(() => {
+                    openAI(currentPrompt.prompt);
+                }, 500);
+            });
+        }
+
+        // Открытие нейросети
+        function openAI(promptText) {
+            const aiSelect = document.getElementById('ai-select');
+            const selectedAI = aiSelect.value;
+            const url = AI_URLS[selectedAI];
+
+            if (url.includes('?prompt=') || url.includes('?q=') || url.includes('&q=')) {
+                window.open(url + encodeURIComponent(promptText), '_blank');
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        // Показ уведомления
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Фильтры
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const category = btn.dataset.category;
+                    const filtered = category === 'all'
+                        ? prompts
+                        : prompts.filter(p => p.category === category);
+                    renderPrompts(filtered);
+                });
+            });
+
+            // Поиск
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = prompts.filter(p =>
+                    p.title.toLowerCase().includes(query) ||
+                    p.description.toLowerCase().includes(query) ||
+                    p.prompt.toLowerCase().includes(query)
+                );
+                renderPrompts(filtered);
+            });
+
+            // Табы
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const tabName = btn.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`tab-${tabName}`).classList.add('active');
+                });
+            });
+
+            // Закрытие модального окна по клику вне его
+            document.getElementById('modal').addEventListener('click', (e) => {
+                if (e.target.id === 'modal') {
+                    closeModal();
+                }
+            });
+
+            // Выбор AI
+            document.getElementById('ai-select').addEventListener('change', (e) => {
+                selectedAI = e.target.value;
+            });
+        }
+
+        // Запуск при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
