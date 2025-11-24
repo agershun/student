@@ -759,7 +759,6 @@
 
             uniqueVariables.forEach((variable, index) => {
                 const cleanVar = variable.slice(1, -1); // Убираем []
-                const isLongText = cleanVar.length > 50 || cleanVar.includes('/') || cleanVar.includes(',');
 
                 const formGroup = document.createElement('div');
                 formGroup.className = 'form-group';
@@ -768,15 +767,9 @@
                 label.textContent = cleanVar;
                 label.setAttribute('for', `var-${index}`);
 
-                let input;
-                if (isLongText) {
-                    input = document.createElement('textarea');
-                    input.rows = 3;
-                } else {
-                    input = document.createElement('input');
-                    input.type = 'text';
-                }
-
+                // Используем textarea для всех переменных
+                const input = document.createElement('textarea');
+                input.rows = 3;
                 input.id = `var-${index}`;
                 input.name = cleanVar;
                 input.placeholder = `Введите значение для: ${cleanVar}`;
