@@ -5332,8 +5332,8 @@
             yandex: 'https://alice.yandex.ru/',
             deepseek: 'https://chat.deepseek.com/',
             qwen: 'https://chat.qwen.ai',
-            zai: 'https://z.ai',
-            lechat: 'https://chat.mistral.ai'
+            zai: 'https://chat.z.ai/?q=',
+            lechat: 'https://chat.mistral.ai/chat?q='
         };
 
         let currentSection = 'students';
@@ -5401,7 +5401,7 @@
 
                 // Open AI URL
                 let url = baseUrl;
-                if (selectedAI === 'chatgpt' || selectedAI === 'claude' || selectedAI === 'grok') {
+                if (selectedAI === 'chatgpt' || selectedAI === 'claude' || selectedAI === 'grok' || selectedAI === 'lechat' || selectedAI === 'zai') {
                     url += encodeURIComponent(promptText);
                 }
                 window.open(url, '_blank');
